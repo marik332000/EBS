@@ -2,7 +2,7 @@
 if (isset($_GET['thumb']) && $_GET['thumb']!="") {
     $url = 'http://pbs.twimg.com/media/'.urlencode($_GET['thumb']).':thumb';
     $type = substr($_GET['thumb'],-3);
-    $p = '/home/pwnybiz/pic/i/t_'.urlencode($_GET['view']);
+    $p = '/your/temp/path/t_'.urlencode($_GET['view']);
       $ch=curl_init();
       curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
       curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
@@ -27,7 +27,7 @@ if (isset($_GET['thumb']) && $_GET['thumb']!="") {
 elseif (isset($_GET['view']) && $_GET['view']!="") {
     $url = 'http://pbs.twimg.com/media/'.urlencode($_GET['view']).':orig';
     $type = substr($_GET['view'],-3);
-    $p = '/home/pwnybiz/pic/i/'.urlencode($_GET['view']);
+    $p = '/your/temp/path/'.urlencode($_GET['view']);
       $ch=curl_init();
       curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
       curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
