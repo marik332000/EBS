@@ -17,6 +17,7 @@ function gettl($user) {
     'user_token' => ATOKEN,
     'user_secret' => ASECRET,
     'curl_ssl_verifypeer' => false,
+    'curl_proxy'                 => '127.0.0.1:8118', //default tor socks5 proxy
   ));
 
 $code = $tmhOAuth->request('GET', $tmhOAuth->url('1.1/statuses/user_timeline'), array( 'screen_name' => $user, 'count' => '50')); $response = $tmhOAuth->response['response']; $timeline = json_decode($response, true);
@@ -91,6 +92,7 @@ function search($term, $max_id=NULL) {
     'user_token' => ATOKEN,
     'user_secret' => ASECRET,
     'curl_ssl_verifypeer' => false,
+    'curl_proxy'                 => '127.0.0.1:8118', //default tor socks5 proxy
   ));
 
 $code = $tmhOAuth->request('GET', $tmhOAuth->url('1.1/search/tweets'), array( 'q' => $term, 'result_type' => 'mixed', 'count' => '50', 'max_id' => $max_id, 'include_entities' => 'true')); $response = $tmhOAuth->response['response']; $timeline = json_decode($response, true);
@@ -127,9 +129,8 @@ echo "</p></div>\n";
 function maketrip($code) {
 #example function-replace with your own
  $trip_length = -10; 
- $salt = "ase9wrERqQ3wer";
+ $salt = "taoW3wq22jO0sqywh";
  $trip = crypt($trip.$salt);
- $trip = str_replace("/","",$trip); 
  $trip = substr($trip,$trip_length); 
  return $trip;
 }
@@ -158,11 +159,13 @@ function twittertags($status) {
 function get_url($shortURL) {
 
 $url = "http://www.longurlplease.com/api/v1.1?q=" . $shortURL;
-$curl_handle=curl_init();
-curl_setopt($curl_handle,CURLOPT_RETURNTRANSFER,1);
-curl_setopt($curl_handle,CURLOPT_URL,$url);
-$url_json = curl_exec($curl_handle);
-curl_close($curl_handle);
+$ch=curl_init();
+curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+curl_setopt($ch,CURLOPT_URL,$url);
+curl_setopt($ch, CURLOPT_PROXY, "127.0.0.1:8118");
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0');
+$url_json = curl_exec($ch);
+curl_close($ch);
 
 $url_array = json_decode($url_json,true);
 

@@ -1,11 +1,6 @@
 <?php
-  error_reporting(E_ALL);
-  ob_start();
   include_once "config.php";
-
   include 'include/functions.php';
-
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -18,11 +13,8 @@
 </head>
 <body>
   <div id="ebs">
-  <!--<div id="header">
-    <h1><a href="./">+++ Emergency Broadcast System +++</a></h1>
-  </div>-->
   <div id="nav">
-    <span class="navi"><a href="./">EBS</a> | <a href="?p=local">Local Messages</a> | <a href="?p=timeline">Twitter Relay</a> | <a href="?p=search">Twitter Search</a> | <a target="_blank" href="index.php?p=link&url=http://paste.pwny.biz">Pastebin</a></span>
+    <span class="navi"><a href="./">EBS</a> | <a href="?p=local">Local Messages</a> | <a href="?p=timeline">Twitter Relay</a> | <a href="?p=search">Twitter Search</a> | <a target="_blank" href="index.php?p=link&url=http://paste.pwny.biz">Pastebin (external)</a></span>
   </div>
   <div id="content">
   <?php if(isset($_GET['p'])) {
@@ -37,6 +29,8 @@ $user = urlencode($_GET['u']); } else { $user = "EMERGENCYRELAY"; } ?>
     'user_token' => ATOKEN,
     'user_secret' => ASECRET,
     'curl_ssl_verifypeer' => false,
+        'curl_proxy'                 => '127.0.0.1:9050', //default tor socks5 proxy
+        'curl_proxytype'             => CURLPROXY_SOCKS5, //set proxy type to socks5
   ));
 
     if (!empty($_FILES['image']['name'])) {
@@ -60,7 +54,7 @@ $user = urlencode($_GET['u']); } else { $user = "EMERGENCYRELAY"; } ?>
     }
   }
   ?>
-    <div class="notice"><p><strong>Here you can relay your messages and/or images to Twitter.<br>Messages will appear on the @EMERGENCYRELAY Twitter feed.<br>You can also see the last 50 tweets of a specific user, it defaults to @EMERGENCYRELAY.<br>Please only use it for important communication.</strong><?php if ($_SERVER['HTTP_HOST'] != "ebszigics62vhony.onion") { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at <a href=\"http://ebszigics62vhony.onion/\">ebszigics62vhony.onion</a>!</strong>"; } ?><br><small><a href="about" style="font-size:12px">[read more]</a></small></p></div>
+    <div class="notice"><p><strong>Here you can relay your messages and/or images to Twitter.<br>Messages will appear on the &lt;YOUR TWITTER GOES HERE&gt; Twitter feed.<br>You can also see the last 50 tweets of a specific user, it defaults to &lt;YOUR TWITTER GOES HERE&gt;.<br>Please only use it for important communication.</strong><?php if ($_SERVER['HTTP_HOST'] != "your.onion") { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at &lt;YOUR ONION GOES HERE&gt;</a>!</strong>"; } ?><br><small><a href="about" style="font-size:12px">[read more]</a></small></p></div>
   <div id="texta">
     <form action="" method="post" enctype="multipart/form-data">
       <fieldset id="main">
@@ -107,7 +101,7 @@ $user = urlencode($_GET['u']); } else { $user = "EMERGENCYRELAY"; } ?>
 
   elseif ($_GET['p']=='search') {
   ?>
-  <div class="notice"><p><strong>This is the Twitter mixed search displaying a mixed feed of 50 popular and most recent tweets.<br>The current default search is: <?php $defaultsearch="#TwitterIsBlockedInTurkey"; echo $defaultsearch; ?></strong><?php if ($_SERVER['HTTP_HOST'] != "ebszigics62vhony.onion") { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at <a href=\"http://ebszigics62vhony.onion/\">ebszigics62vhony.onion</a>!</strong>"; } ?><br><small><a href="about" style="font-size:12px">[read more]</a></small></p></div>
+  <div class="notice"><p><strong>This is the Twitter mixed search displaying a mixed feed of 50 popular and most recent tweets.<br>The current default search is: <?php $defaultsearch="#TwitterIsBlockedInTurkey"; echo $defaultsearch; ?></strong><?php if ($_SERVER['HTTP_HOST'] != "your.onion") { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at &lt;YOUR ONION GOES HERE&gt;!</strong>"; } ?><br><small><a href="about" style="font-size:12px">[read more]</a></small></p></div>
   <?php if (!empty($_GET['q'])) { $term = urlencode($_GET['q']); } else { $term = urlencode($defaultsearch); } ?>
     <div id="texta">
      <form action="" method="GET">
@@ -132,14 +126,14 @@ $user = urlencode($_GET['u']); } else { $user = "EMERGENCYRELAY"; } ?>
         } else {
           $trip = "";
         }
-        if (mysql_query( "INSERT INTO ebs (tstamp, content, trip ) VALUES('".time()."', '".f4db($_POST['content'])."','".$trip."')")) {
+        if (mysql_query( "INSERT INTO ebs (timestamp, content, trip ) VALUES('".time()."', '".f4db($_POST['content'])."','".$trip."')")) {
           mysql_query ( "DELETE e FROM ebs AS e JOIN (SELECT id FROM ebs WHERE (trip != 'admin') ORDER BY id DESC LIMIT 1 OFFSET 1000) AS lim ON e.id < lim.id ;" );
-          mysql_query ( "DELETE FROM ebs WHERE (trip != 'admin' AND ".time()." - tstamp > 86400)");
+          mysql_query ( "DELETE FROM ebs WHERE (trip != 'admin' AND ".time()." - timestamp > 86400)");
         }
         else echo mysql_error();
       }
 ?>
-  <div class="notice"><p><strong>This is the local feed. Messages posted here are NOT relayed to Twitter.<br>Messages are posted ANONYMOUSLY, are NOT VERIFIED and can be SEEN BY ANYONE - be cautious!</strong><?php if ($_SERVER['HTTP_HOST'] != "ebszigics62vhony.onion") { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at <a href=\"http://ebszigics62vhony.onion/\">ebszigics62vhony.onion</a>!</strong>"; } ?><br><small><a href="about" style="font-size:12px">[read more]</a></small></p></div>
+  <div class="notice"><p><strong>This is the local feed. Messages posted here are NOT relayed to Twitter.<br>Messages are posted ANONYMOUSLY, are NOT VERIFIED and can be SEEN BY ANYONE - be cautious!</strong><?php if ($_SERVER['HTTP_HOST'] != "your.onion") { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at &lt;YOUR ONION GOES HERE&gt;!</strong>"; } ?><br><small><a href="about" style="font-size:12px">[read more]</a></small></p></div>
 <div id="texta">
   <form action="" method="post" enctype="multipart/form-data">
         <fieldset id="main">
@@ -182,7 +176,7 @@ $user = urlencode($_GET['u']); } else { $user = "EMERGENCYRELAY"; } ?>
     <div id="texta">
     <div class="notice">
       <h2>Welcome to the Emergency Broadcast System</h2>
-      <p><img src="pic.jpg" /><br><br><a href="index.php?p=local">Post a message on the EBS</a><br><small>EBS’e bir mesaj gönder</small><br><br><a href="index.php?p=timeline">Post to Twitter via @EMERGENCYRELAY</a><br><small>Twitter’a @EMERGENCYRELAY hesabı üzerinden mesaj at</small><br><br><a href="index.php?p=search">Search on Twitter</a><br><small>Twitter’da arama</small><br><br><strong>This site is also available as a Tor Hidden Service at <a href="http://ebszigics62vhony.onion/">ebszigics62vhony.onion</a></strong></p>
+      <p><img src="pic.jpg" /><br><br><a href="index.php?p=local">Post a message on the EBS</a><br><small>EBS’e bir mesaj gönder</small><br><br><a href="index.php?p=timeline">Post to Twitter via &lt;YOUR TWITTER GOES HERE&gt;</a><br><small>Twitter’a &lt;YOUR TWITTER GOES HERE&gt; hesabı üzerinden mesaj at</small><br><br><a href="index.php?p=search">Search on Twitter</a><br><small>Twitter’da arama</small><br><br><strong>This site is also available as a Tor Hidden Service at <a href="http://your.onion/">your.onion</a></strong></p>
     </div>
     </div>
   <?php
