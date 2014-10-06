@@ -30,7 +30,7 @@ if (isset($_GET['thumb']) && $_GET['thumb']!="") {
 elseif (isset($_GET['view']) && $_GET['view']!="") {
     $url = 'https://pbs.twimg.com/media/'.urlencode($_GET['view']).':orig';
     $type = substr($_GET['view'],-3);
-    $p = IMGPATH.urlencode($_GET['view']);
+    $p = IMGPATH.'/o_'.urlencode($_GET['view']);
       $ch=curl_init();
       curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
       curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
