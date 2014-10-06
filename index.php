@@ -1,6 +1,6 @@
 <?php
-  include_once "config.php";
-  include 'include/functions.php';
+  error_reporting(E_ALL);
+  include './include/config.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -14,14 +14,14 @@
 <body>
   <div id="ebs">
   <div id="nav">
-    <span class="navi"><a href="./">EBS</a> | <a href="?p=local">Local Messages</a> | <a href="?p=timeline">Twitter Relay</a> | <a href="?p=search">Twitter Search</a> | <a target="_blank" href="index.php?p=link&url=http://paste.pwny.biz">Pastebin (external)</a></span>
+    <span class="navi"><a href="./">Home</a> | <a href="?p=local">Local Messages</a> | <a href="?p=timeline">Twitter Relay</a> | <a href="?p=search">Twitter Search</a> | Add your links here
   </div>
   <div id="content">
   <?php if(isset($_GET['p'])) {
     if ($_GET['p'] == 'timeline') {
   ?>
    <?php if(isset($_GET['u']) && ($_GET['u']!="")) { 
-$user = urlencode($_GET['u']); } else { $user = "EMERGENCYRELAY"; } ?>
+$user = urlencode($_GET['u']); } else { $user = DEFAULTUSER; } ?>
   <?php if (isset($_POST['tweet'])) {
       $tmhOAuth = new tmhOAuth(array(
     'consumer_key' => CKEY,
@@ -29,8 +29,7 @@ $user = urlencode($_GET['u']); } else { $user = "EMERGENCYRELAY"; } ?>
     'user_token' => ATOKEN,
     'user_secret' => ASECRET,
     'curl_ssl_verifypeer' => false,
-        'curl_proxy'                 => '127.0.0.1:9050', //default tor socks5 proxy
-        'curl_proxytype'             => CURLPROXY_SOCKS5, //set proxy type to socks5
+    'curl_proxy' => PROXYHOST.':'.PROXYPORT,
   ));
 
     if (!empty($_FILES['image']['name'])) {
@@ -54,7 +53,7 @@ $user = urlencode($_GET['u']); } else { $user = "EMERGENCYRELAY"; } ?>
     }
   }
   ?>
-    <div class="notice"><p><strong>Here you can relay your messages and/or images to Twitter.<br>Messages will appear on the &lt;YOUR TWITTER GOES HERE&gt; Twitter feed.<br>You can also see the last 50 tweets of a specific user, it defaults to &lt;YOUR TWITTER GOES HERE&gt;.<br>Please only use it for important communication.</strong><?php if ($_SERVER['HTTP_HOST'] != "your.onion") { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at &lt;YOUR ONION GOES HERE&gt;</a>!</strong>"; } ?><br><small><a href="about" style="font-size:12px">[read more]</a></small></p></div>
+    <div class="notice"><p><strong>Here you can relay your messages and/or images to Twitter.<br>Messages will appear on the <?php echo '@'.ACCOUNTNAME; ?> Twitter feed.<br>You can also see the last 50 tweets of a specific user, it defaults to <?php echo '@'.DEFAULTUSER; ?>.<br>Please only use it for important communication.</strong><?php if ($_SERVER['HTTP_HOST'] != HIDDENSERV) { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at <a href=\"http://".HIDDENSERV."\">".HIDDENSERV."</a>!</strong>"; } ?><br><small><a href="about" style="font-size:12px">[read more]</a></small></p></div>
   <div id="texta">
     <form action="" method="post" enctype="multipart/form-data">
       <fieldset id="main">
@@ -101,8 +100,8 @@ $user = urlencode($_GET['u']); } else { $user = "EMERGENCYRELAY"; } ?>
 
   elseif ($_GET['p']=='search') {
   ?>
-  <div class="notice"><p><strong>This is the Twitter mixed search displaying a mixed feed of 50 popular and most recent tweets.<br>The current default search is: <?php $defaultsearch="#TwitterIsBlockedInTurkey"; echo $defaultsearch; ?></strong><?php if ($_SERVER['HTTP_HOST'] != "your.onion") { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at &lt;YOUR ONION GOES HERE&gt;!</strong>"; } ?><br><small><a href="about" style="font-size:12px">[read more]</a></small></p></div>
-  <?php if (!empty($_GET['q'])) { $term = urlencode($_GET['q']); } else { $term = urlencode($defaultsearch); } ?>
+  <div class="notice"><p><strong>This is the Twitter mixed search displaying a mixed feed of 50 popular and most recent tweets.<br>The current default search is: <?php echo DEFAULTSEARCH; ?></strong><?php if ($_SERVER['HTTP_HOST'] != HIDDENSERV) { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at <a href=\"http://".HIDDENSERV."\">".HIDDENSERV."</a>!</strong>"; } ?><br><small><a href="about" style="font-size:12px">[read more]</a></small></p></div>
+  <?php if (!empty($_GET['q'])) { $term = urlencode($_GET['q']); } else { $term = urlencode(DEFAULTSEARCH); } ?>
     <div id="texta">
      <form action="" method="GET">
        <fieldset id="main">
@@ -133,7 +132,7 @@ $user = urlencode($_GET['u']); } else { $user = "EMERGENCYRELAY"; } ?>
         else echo mysql_error();
       }
 ?>
-  <div class="notice"><p><strong>This is the local feed. Messages posted here are NOT relayed to Twitter.<br>Messages are posted ANONYMOUSLY, are NOT VERIFIED and can be SEEN BY ANYONE - be cautious!</strong><?php if ($_SERVER['HTTP_HOST'] != "your.onion") { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at &lt;YOUR ONION GOES HERE&gt;!</strong>"; } ?><br><small><a href="about" style="font-size:12px">[read more]</a></small></p></div>
+  <div class="notice"><p><strong>This is the local feed. Messages posted here are NOT relayed to Twitter.<br>Messages are posted ANONYMOUSLY, are NOT VERIFIED and can be SEEN BY ANYONE - be cautious!</strong><?php if ($_SERVER['HTTP_HOST'] != HIDDENSERV) { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at <a href=\"http://".HIDDENSERV."\">".HIDDENSERV."</a>!</strong>"; } ?><br><small><a href="about" style="font-size:12px">[read more]</a></small></p></div>
 <div id="texta">
   <form action="" method="post" enctype="multipart/form-data">
         <fieldset id="main">
@@ -176,7 +175,7 @@ $user = urlencode($_GET['u']); } else { $user = "EMERGENCYRELAY"; } ?>
     <div id="texta">
     <div class="notice">
       <h2>Welcome to the Emergency Broadcast System</h2>
-      <p><img src="pic.jpg" /><br><br><a href="index.php?p=local">Post a message on the EBS</a><br><small>EBS’e bir mesaj gönder</small><br><br><a href="index.php?p=timeline">Post to Twitter via &lt;YOUR TWITTER GOES HERE&gt;</a><br><small>Twitter’a &lt;YOUR TWITTER GOES HERE&gt; hesabı üzerinden mesaj at</small><br><br><a href="index.php?p=search">Search on Twitter</a><br><small>Twitter’da arama</small><br><br><strong>This site is also available as a Tor Hidden Service at <a href="http://your.onion/">your.onion</a></strong></p>
+      <p><img src="pic.jpg" /><br><br><a href="index.php?p=local">Post a message on the EBS</a><br><small>EBS’e bir mesaj gönder</small><br><br><a href="index.php?p=timeline">Post to Twitter via <?php echo '@'.ACCOUNTNAME; ?></a><br><small>Twitter’a <?php echo '@'.ACCOUNTNAME; ?> hesabı üzerinden mesaj at</small><br><br><a href="index.php?p=search">Search on Twitter</a><br><small>Twitter’da arama</small><br><br><strong>This site is also available as a Tor Hidden Service at <?php echo "<a href=\"http://".HIDDENSERV."\">".HIDDENSERV."</a>"; ?></strong></p>
     </div>
     </div>
   <?php

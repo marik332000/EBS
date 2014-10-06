@@ -79,7 +79,6 @@ class tmhOAuth {
 
         // support for proxy servers
         'curl_proxy'                 => false, // really you don't want to use this if you are using streaming
-        'curl_proxytype'             => CURLPROXY_SOCKS5,
         'curl_proxyuserpwd'          => false, // format username:password for proxy, if required
         'curl_encoding'              => '',    // leave blank for all supported formats, else use gzip, deflate, identity etc
 
@@ -801,7 +800,6 @@ class tmhOAuth {
 
       CURLOPT_FOLLOWLOCATION => $this->config['curl_followlocation'],
       CURLOPT_PROXY          => $this->config['curl_proxy'],
-      CURLOPT_PROXYTYPE          => $this->config['curl_proxytype'],
       CURLOPT_ENCODING       => $this->config['curl_encoding'],
       CURLOPT_URL            => $this->request_settings['url'],
       // process the headers
