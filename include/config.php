@@ -21,5 +21,7 @@
   define('PROXYHOST', '127.0.0.1');
   define('PROXYPORT', '8118');
 
+  define('IMGPATH', '/your/temp/path'); //no trailing slash!
+
   include 'functions.php';
 ?>
