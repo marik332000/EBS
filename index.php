@@ -125,9 +125,9 @@ $user = urlencode($_GET['u']); } else { $user = DEFAULTUSER; } ?>
         } else {
           $trip = "";
         }
-        if (mysql_query( "INSERT INTO ebs (timestamp, content, trip ) VALUES('".time()."', '".f4db($_POST['content'])."','".$trip."')")) {
+        if (mysql_query( "INSERT INTO ebs (tstamp, content, trip ) VALUES('".time()."', '".f4db($_POST['content'])."','".$trip."')")) {
           mysql_query ( "DELETE e FROM ebs AS e JOIN (SELECT id FROM ebs WHERE (trip != 'admin') ORDER BY id DESC LIMIT 1 OFFSET 1000) AS lim ON e.id < lim.id ;" );
-          mysql_query ( "DELETE FROM ebs WHERE (trip != 'admin' AND ".time()." - timestamp > 86400)");
+          mysql_query ( "DELETE FROM ebs WHERE (trip != 'admin' AND ".time()." - tstamp > 86400)");
         }
         else echo mysql_error();
       }
