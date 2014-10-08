@@ -63,24 +63,6 @@ $user = urlencode($_GET['u']); } else { $user = DEFAULTUSER; } ?>
         <span id="remaining"><noscript>max. 140 characters</noscript></span>
       </fieldset>
     </form>
-    <script type="text/javascript">
-        function updateCount() {
-          var maxlen = 140;
-          var remaining = maxlen - document.getElementById("status").value.length;
-          document.getElementById("remaining").innerHTML = remaining + " characters remaining";
-          if(remaining < 0) {
-            var colour = "#f00";
-            var weight = "bold";
-          } else {
-            var colour = "";
-            var weight = "";
-          }
-          document.getElementById("remaining").style.color = colour;
-          document.getElementById("remaining").style.fontWeight = weight;
-          setTimeout(updateCount, 400);
-          }
-          updateCount();
-        </script>
 <br><br>
 
     <form action="" method="GET">
@@ -144,24 +126,6 @@ $user = urlencode($_GET['u']); } else { $user = DEFAULTUSER; } ?>
 
         </fieldset>
       </form>        
-      <script type="text/javascript">
-        function updateCount() {
-          var maxlen = 300;
-          var remaining = maxlen - document.getElementById("status").value.length;
-          document.getElementById("remaining").innerHTML = remaining + " characters remaining";
-          if(remaining < 0) {
-            var colour = "#f00";
-            var weight = "bold";
-          } else {
-            var colour = "";
-            var weight = "";
-          }
-          document.getElementById("remaining").style.color = colour;
-          document.getElementById("remaining").style.fontWeight = weight;
-          setTimeout(updateCount, 400);
-          }
-          updateCount();
-        </script>
 </div>
     <div id="messages">
   <?php getlocal(); ?>
