@@ -23,16 +23,18 @@ function gettl($user) {
   $max = "";
 
   foreach ($timeline as $s) {
-    $max = $status['id_str'];
+    $max = $s['id_str'];
   if($i%2 == 0) { $class = 'odd'; } else { $class = 'even'; }
     $timestamp = $s["created_at"];
     $date = explode(" ", $timestamp);
-    $datef = $date[0].", ".$date[1]." ".$date[2]." ".$date[5]." - ".$date[3]." UTC";
+    $time = explode(':',$date[3]);
+    $datef = mktime($time[0],$time[1],$time[2],date("m", strtotime($date[1])),$date[2],$date[5]);
+    $ago = time_since($datef);
     $status = $s["text"];       
     $status = preg_replace('/([\w]+\:\/\/[\w-?&;#~=.\/\@]+[\w\/])/', '<a class="external" target="_blank" href="index.php?p=link&url=$1">$1</a>', $status);
     $status = preg_replace('/#([A-Za-z0-9_ÄÖÜßäöü\/.]*)/', '<a class="external" href="index.php?p=search&q=%23$1">#$1</a>', $status);
     $status = preg_replace('/@([A-Za-z0-9_\/.]*)/', '<a class="external" href="index.php?p=search&q=%40$1">@$1</a>', $status);
-    echo '<div class="mdiv '.$class.'"><span class="meta"><a class="external" href="index.php?p=timeline&u='.$user.'">@'.$user.'</a> - '.$datef.' <!--'.$max.'--></span><p class="msg">'.$status.'<br>';
+    echo '<div class="mdiv '.$class.'"><span class="meta"><a class="external" href="index.php?p=timeline&u='.$user.'">@'.$user.'</a> - '.$ago.' <!--'.$max.'--></span><p class="msg">'.$status.'<br>';
     if ($s['entities']['media'][0]['media_url']!="") { 
       $img = substr($s['entities']['media'][0]['media_url'],27);
       echo '<a href="getimg.php?view='.$img.'"><img src="getimg.php?thumb='.$img.'"/></a></p>'; 
@@ -103,13 +105,16 @@ function search($term, $max_id=NULL) {
     $user = $s["user"]["screen_name"];
     $timestamp = $s["created_at"];
     $date = explode(" ", $timestamp);
-    $datef = $date[0].", ".$date[1]." ".$date[2]." ".$date[5]." - ".$date[3]." UTC";
+    $time = explode(':',$date[3]);
+    $datef = mktime($time[0],$time[1],$time[2],date("m", strtotime($date[1])),$date[2],$date[5]);
+    $ago = time_since($datef);
+    $dateg = strtotime($date[0].", ".$date[1]." ".$date[2]." ".$date[5]." - ".$date[3]." UTC");
     $status = $s["text"];   
     //todo: replace t.co with long urls
     $status = preg_replace('/([\w]+\:\/\/[\w-?&;#~=.\/\@]+[\w\/])/', '<a class="external" target="_blank" href="index.php?p=link&url=$1">$1</a>', $status);
     $status = preg_replace('/#([A-Za-z0-9_ÄÖÜßäöü\/.]*)/', '<a class="external" href="index.php?p=search&q=%23$1">#$1</a>', $status);
     $status = preg_replace('/@([A-Za-z0-9_\/.]*)/', '<a class="external" href="index.php?p=search&q=%40$1">@$1</a>', $status);
-    echo '<div class="mdiv '.$class.'"><span class="meta"><a class="external" href="index.php?p=timeline&u='.$user.'">@'.$user.'</a> - '.$datef.' <!--'.$max.'--></span><p class="msg">'.$status.'<br>';
+    echo '<div class="mdiv '.$class.'"><span class="meta"><a class="external" href="index.php?p=timeline&u='.$user.'">@'.$user.'</a> - '.$ago.' <!--'.$max.'--></span><p class="msg">'.$status.'<br>';
     if ($s['entities']['media'][0]['media_url']!="") { 
       $img = substr($s['entities']['media'][0]['media_url'],27);
       echo '<a href="getimg.php?view='.$img.'"><img src="getimg.php?thumb='.$img.'"/></a></p>';
@@ -128,7 +133,7 @@ function search($term, $max_id=NULL) {
 function maketrip($code) {
   #example function-replace with your own
   $trip_length = -10; 
-  $salt = "taoW3wq22jO0sqywh";
+  $salt = TRIPSALT;
   $trip = crypt($trip.$salt);
   $trip = substr($trip,$trip_length); 
   return $trip;

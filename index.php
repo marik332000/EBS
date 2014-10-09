@@ -1,5 +1,4 @@
 <?php
-  error_reporting(E_ALL);
   include './include/config.php';
 ?>
 <!DOCTYPE html>
@@ -14,7 +13,7 @@
 <body>
   <div id="ebs">
   <div id="nav">
-    <span class="navi"><a href="./">Home</a> | <a href="?p=local">Local Messages</a> | <a href="?p=timeline">Twitter Relay</a> | <a href="?p=search">Twitter Search</a> | Add your links here
+    <span class="navi"><a href="./">Home</a> | <a href="?p=local">Local Messages</a> | <a href="?p=timeline">Twitter Relay</a> | <a href="?p=search">Twitter Search</a></span>
   </div>
   <div id="content">
   <?php if(isset($_GET['p'])) {
@@ -34,21 +33,21 @@ $user = urlencode($_GET['u']); } else { $user = DEFAULTUSER; } ?>
 
     if (!empty($_FILES['image']['name'])) {
       $image = "{$_FILES['image']['tmp_name']};type={$_FILES['image']['type']};filename={$_FILES['image']['name']}";
-      $response = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update_with_media.json'),array('media[]' => "@{$image}", 'status' => " " . strip_tags($_POST['content'])),true,true);
+      $response = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update_with_media.json'),array('media[]' => "@{$image}", 'status' => $_POST['tweet']." "),true,true);
       if ($response == 200) {
         echo "<!-- DEBUG <span class=\"alert\"><strong>[$response] Image successfully relayed to Twitter.</strong></span><br> -->";
       }
       else {
-        echo "<span class=\"alert\"><strong>[$response] There was an error relaying the image to Twitter.</strong></span><br>";  
+        echo "<span class=\"alert\"><strong>[".print_r($tmhOAuth->response['response'], true)."] There was an error relaying the image to Twitter.</strong></span><br>";  
       }
     }
     else {
-      $response = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' => strip_tags($_POST['tweet'])));
+      $response = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/statuses/update'), array('status' => $_POST['tweet']));
       if ($response == 200) {
         echo "<!-- DEBUG <span class=\"alert\"><strong>[$response] Message successfully relayed to Twitter.</strong></span><br> -->";
       }
       else {
-        echo "<span class=\"alert\"><strong>[$response] There was an error relaying the message to Twitter.</strong></span><br>";                
+        echo "<span class=\"alert\"><strong>[".print_r($tmhOAuth->response['response'], true)."] There was an error relaying the image to Twitter.</strong></span><br>";                 
       }
     }
   }
@@ -61,33 +60,15 @@ $user = urlencode($_GET['u']); } else { $user = DEFAULTUSER; } ?>
         <span id="tarea"><textarea id="status" name="tweet" rows="4" cols="70" maxlength="300" placeholder="Your message here."></textarea></span>
         <span id="but"><input type="submit" value="Tweet!" class="button"></span>
         <span id="addimg"><label>Attach Image:</label><input type="file" name="image" /></span>
-        <span id="remaining"><noscript>max. 140 characters</noscript></span>
+        <span id="remaining">max. 140 characters</span>
       </fieldset>
     </form>
-    <script type="text/javascript">
-        function updateCount() {
-          var maxlen = 140;
-          var remaining = maxlen - document.getElementById("status").value.length;
-          document.getElementById("remaining").innerHTML = remaining + " characters remaining";
-          if(remaining < 0) {
-            var colour = "#f00";
-            var weight = "bold";
-          } else {
-            var colour = "";
-            var weight = "";
-          }
-          document.getElementById("remaining").style.color = colour;
-          document.getElementById("remaining").style.fontWeight = weight;
-          setTimeout(updateCount, 400);
-          }
-          updateCount();
-        </script>
 <br><br>
 
     <form action="" method="GET">
        <fieldset id="options">
        <legend>Show timeline of user:</legend>
-       <span id="tarea"><input type="hidden" name="p" value="timeline"><input type="text" name="u">&nbsp;&nbsp;<input type="submit" value="Show" /></span>
+       <span id="tarea"><input type="hidden" name="p" value="timeline"><input type="text" name="u" placeholder="<?php echo DEFAULTUSER; ?>">&nbsp;&nbsp;<input type="submit" value="Show" /></span>
        </fieldset>
     </form>
 
@@ -106,7 +87,7 @@ $user = urlencode($_GET['u']); } else { $user = DEFAULTUSER; } ?>
      <form action="" method="GET">
        <fieldset id="main">
        <legend>What are you looking for?</legend>
-       <span id="tarea"><input type="hidden" name="p" value="search"><input type="text" name="q">&nbsp;&nbsp;<input type="submit" value="Search" /></span>
+       <span id="tarea"><input type="hidden" name="p" value="search"><input type="text" name="q" placeholder="<?php echo DEFAULTSEARCH; ?>">&nbsp;&nbsp;<input type="submit" value="Search" /></span>
        </fieldset>
     </form>
    </div>
@@ -125,9 +106,9 @@ $user = urlencode($_GET['u']); } else { $user = DEFAULTUSER; } ?>
         } else {
           $trip = "";
         }
-        if (mysql_query( "INSERT INTO ebs (timestamp, content, trip ) VALUES('".time()."', '".f4db($_POST['content'])."','".$trip."')")) {
+        if (mysql_query( "INSERT INTO ebs (tstamp, content, trip ) VALUES('".time()."', '".f4db($_POST['content'])."','".$trip."')")) {
           mysql_query ( "DELETE e FROM ebs AS e JOIN (SELECT id FROM ebs WHERE (trip != 'admin') ORDER BY id DESC LIMIT 1 OFFSET 1000) AS lim ON e.id < lim.id ;" );
-          mysql_query ( "DELETE FROM ebs WHERE (trip != 'admin' AND ".time()." - timestamp > 86400)");
+          mysql_query ( "DELETE FROM ebs WHERE (trip != 'admin' AND ".time()." - tstamp > 86400)");
         }
         else echo mysql_error();
       }
@@ -140,29 +121,11 @@ $user = urlencode($_GET['u']); } else { $user = DEFAULTUSER; } ?>
           <span id="tarea"><textarea id="status" name="content" rows="4" cols="70" maxlength="300" placeholder="Your message here."></textarea></span>
           <span id="but"><input type="submit" value="Broadcast!" class="button"></span>
           <span id="addimg"><label>Tripcode (optional):</label><input type="text" name="trip" class="text"></span>
-          <span id="remaining"><noscript>max. 300 characters</noscript></span>
+          <span id="remaining">max. 300 characters</span>
         </fieldset>
 
         </fieldset>
       </form>        
-      <script type="text/javascript">
-        function updateCount() {
-          var maxlen = 300;
-          var remaining = maxlen - document.getElementById("status").value.length;
-          document.getElementById("remaining").innerHTML = remaining + " characters remaining";
-          if(remaining < 0) {
-            var colour = "#f00";
-            var weight = "bold";
-          } else {
-            var colour = "";
-            var weight = "";
-          }
-          document.getElementById("remaining").style.color = colour;
-          document.getElementById("remaining").style.fontWeight = weight;
-          setTimeout(updateCount, 400);
-          }
-          updateCount();
-        </script>
 </div>
     <div id="messages">
   <?php getlocal(); ?>
@@ -175,7 +138,7 @@ $user = urlencode($_GET['u']); } else { $user = DEFAULTUSER; } ?>
     <div id="texta">
     <div class="notice">
       <h2>Welcome to the Emergency Broadcast System</h2>
-      <p><img src="pic.jpg" /><br><br><a href="index.php?p=local">Post a message on the EBS</a><br><small>EBS’e bir mesaj gönder</small><br><br><a href="index.php?p=timeline">Post to Twitter via <?php echo '@'.ACCOUNTNAME; ?></a><br><small>Twitter’a <?php echo '@'.ACCOUNTNAME; ?> hesabı üzerinden mesaj at</small><br><br><a href="index.php?p=search">Search on Twitter</a><br><small>Twitter’da arama</small><br><br><strong>This site is also available as a Tor Hidden Service at <?php echo "<a href=\"http://".HIDDENSERV."\">".HIDDENSERV."</a>"; ?></strong></p>
+      <p><img src="pic.jpg" /><br><br><a href="index.php?p=local">Post a message on the EBS</a><br><small>EBS’e bir mesaj gönder</small><br><br><a href="index.php?p=timeline">Post to Twitter via <?php echo '@'.ACCOUNTNAME; ?></a><br><small>Twitter’a <?php echo '@'.ACCOUNTNAME; ?> hesabı üzerinden mesaj at</small><br><br><a href="index.php?p=search">Search on Twitter</a><br><small>Twitter’da arama</small><?php if ($_SERVER['HTTP_HOST'] != HIDDENSERV) { echo "<br><br><strong>This site is also available as a TOR HIDDEN SERVICE at <a href=\"http://".HIDDENSERV."\">".HIDDENSERV."</a>!</strong>"; } ?></strong></p>
     </div>
     </div>
   <?php

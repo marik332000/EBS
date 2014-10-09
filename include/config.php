@@ -23,5 +23,6 @@
 
   define('IMGPATH', '/your/temp/path'); //no trailing slash!
 
+  define('TRIPSALT', 'yoursalthere');
   include 'functions.php';
 ?>
